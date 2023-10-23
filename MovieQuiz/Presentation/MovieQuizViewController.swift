@@ -6,7 +6,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     @IBOutlet private weak var counterLabel: UILabel!
     
     private var correctAnswers = 0
-    
+
     private var currentQuestionIndex = 0
     private let questionsAmount: Int = 10
     
