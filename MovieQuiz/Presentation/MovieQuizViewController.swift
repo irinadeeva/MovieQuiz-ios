@@ -106,13 +106,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
                 Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
                 Средняя точность: \(String(format: "%.2f", statisticService.totalAccurancy))%
                 """,
-                buttonText: "Сыграть ещё раз",
-                completion: {
-                    [weak self] in
+                buttonText: "Сыграть ещё раз") { [weak self] in
                     self?.currentQuestionIndex = 0
                     self?.correctAnswers = 0
                     self?.questionFactory?.requestNextQuestion()
-                })
+                }
             
             alertPresenter?.show(alertModel: alert)
         } else {

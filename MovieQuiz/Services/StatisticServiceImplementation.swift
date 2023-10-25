@@ -11,37 +11,19 @@ final class StatisticServiceImplementation: StatisticService {
     private let userDefaults = UserDefaults.standard
     var totalAccurancy: Double {
         get {
-            guard let data = userDefaults.data(forKey: Keys.total.rawValue),
-                  let record = try? JSONDecoder().decode(Double.self, from: data) else {
-                return .init(0)
-            }
-            
-            return record
+            return userDefaults.double(forKey: Keys.total.rawValue)
         }
         set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Невозможно сохранить результат")
-                return
-            }
-            userDefaults.set(data, forKey: Keys.total.rawValue)
+            userDefaults.set(newValue, forKey: Keys.total.rawValue)
         }
     }
     
     var gamesCount: Int {
         get {
-            guard let data = userDefaults.data(forKey: Keys.gamesCount.rawValue),
-                  let record = try? JSONDecoder().decode(Int.self, from: data) else {
-                return .init(0)
-            }
-            
-            return record
+            return userDefaults.integer(forKey: Keys.gamesCount.rawValue)
         }
         set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Невозможно сохранить результат")
-                return
-            }
-            userDefaults.set(data, forKey: Keys.gamesCount.rawValue)
+            userDefaults.set(newValue, forKey: Keys.gamesCount.rawValue)
         }
     }
     
