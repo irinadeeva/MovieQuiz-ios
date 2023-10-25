@@ -4,9 +4,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var yesButton: UIButton!
+    @IBOutlet private weak var noButton: UIButton!
     
     private var correctAnswers = 0
-
+    
     private var currentQuestionIndex = 0
     private let questionsAmount: Int = 10
     
@@ -15,11 +17,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     private var alertPresenter: AlertProtocol?
     private var statisticService: StatisticService?
     
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
         
@@ -35,6 +35,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         
         currentQuestion = question
         let viewModel = convert(model: question)
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -42,16 +44,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     
     // MARK: - Actions
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        yesButton.isEnabled = false
         guard let currentQuestion = currentQuestion else {
             return
         }
-        
         let givenAnswer = true
         let currentQuestionAnswer = currentQuestion.correctAnswer
         showAnswerResult(isCorrect: givenAnswer == currentQuestionAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
+        noButton.isEnabled = false
         guard let currentQuestion = currentQuestion else {
             return
         }

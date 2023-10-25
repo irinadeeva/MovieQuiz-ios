@@ -51,16 +51,14 @@ final class StatisticServiceImplementation: StatisticService {
         } else {
             totalAccurancy = Double(count)/Double(amount) * 100.0
         }
-            
+        
         gamesCount = gamesCount + 1
         
         if !bestGame.isHigher(than: count) {
             bestGame = GameRecord(correct: count, total: amount, date: Date())
         }
     }
-    
 }
-
 
 private enum Keys: String {
     case correct, total, bestGame, gamesCount

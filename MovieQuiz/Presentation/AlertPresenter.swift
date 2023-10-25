@@ -22,7 +22,7 @@ extension AlertPresenter: AlertProtocol {
             preferredStyle: .alert)
         
         let action = UIAlertAction(title: alertModel.buttonText, style: .default) { _ in
-           alertModel.completion()
+            alertModel.completion()
         }
         
         alert.addAction(action)
