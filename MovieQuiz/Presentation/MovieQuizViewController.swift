@@ -6,6 +6,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var yesButton: UIButton!
     @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     private var correctAnswers = 0
     
@@ -110,9 +111,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
                 Средняя точность: \(String(format: "%.2f", statisticService.totalAccurancy))%
                 """,
                 buttonText: "Сыграть ещё раз") { [weak self] in
-                    self?.currentQuestionIndex = 0
-                    self?.correctAnswers = 0
-                    self?.questionFactory?.requestNextQuestion()
+                    guard let self = self else {return}
+                    
+                    self.currentQuestionIndex = 0
+                    self.correctAnswers = 0
+                    self.questionFactory?.requestNextQuestion()
                 }
             
             alertPresenter?.show(alertModel: alert)
@@ -121,5 +124,33 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             
             questionFactory?.requestNextQuestion()
         }
+    }
+    
+    private func showActivityIndicator(){
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    
+    private func showNetworkAlert(message: String) {
+        hideLoadingIndicator()
+        
+        let alert = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз") { [weak self] in
+                guard let self = self else {return}
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                self.questionFactory?.requestNextQuestion()
+            }
+        
+        alertPresenter?.show(alertModel: alert)
+    }
+    
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
     }
 }
