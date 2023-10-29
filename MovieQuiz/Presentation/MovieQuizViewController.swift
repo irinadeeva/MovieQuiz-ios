@@ -21,8 +21,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        questionFactory = QuestionFactory(delegate: self)
-        questionFactory?.requestNextQuestion()
+        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        
+        imageView.layer.cornerRadius = 20
+        showActivityIndicator()
         
         alertPresenter = AlertPresenter(viewController: self)
         statisticService = StatisticServiceImplementation()
@@ -41,6 +45,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkAlert(message: error.localizedDescription)
     }
     
     // MARK: - Actions
@@ -68,7 +81,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     // MARK: - Private functions
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         return questionStep
