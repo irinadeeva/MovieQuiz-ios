@@ -27,7 +27,6 @@ final class QuestionFactory: QuestionFactoryProtocol {
                     self.movies = mostPopularMovies.items
                     self.delegate?.didLoadDataFromServer()
                 case .failure(let error):
-                    print(error.localizedDescription)
                     self.delegate?.didFailToLoadData(with: error)
                 }
             }
