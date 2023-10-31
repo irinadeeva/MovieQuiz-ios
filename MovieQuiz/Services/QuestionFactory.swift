@@ -49,7 +49,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
             }
             
             let rating = Float(movie.rating) ?? 0
-            let ratingBenchmark = (6..<9).randomElement() ?? 6
+            let ratingBenchmark = (7..<9).randomElement() ?? 8
             let text = "Рейтинг этого фильма больше чем \(ratingBenchmark)?"
             let correctAnswer = rating > Float(ratingBenchmark)
             
