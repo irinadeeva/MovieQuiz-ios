@@ -25,6 +25,8 @@ extension AlertPresenter: AlertProtocol {
             alertModel.completion()
         }
         
+        alert.view.accessibilityIdentifier = "Result"
+        
         alert.addAction(action)
         viewController?.present(alert, animated: true)
     }
