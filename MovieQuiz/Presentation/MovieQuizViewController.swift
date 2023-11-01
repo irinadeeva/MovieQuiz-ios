@@ -8,11 +8,10 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
-    
     private var presenter: MovieQuizPresenter!
     
     private var alertPresenter: AlertProtocol?
-    private var statisticService: StatisticService?
+//    private var statisticService: StatisticService?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -24,7 +23,7 @@ final class MovieQuizViewController: UIViewController {
         showActivityIndicator()
         
         alertPresenter = AlertPresenter(viewController: self)
-        statisticService = StatisticServiceImplementation()
+
     }
     
     // MARK: - Actions
@@ -42,7 +41,7 @@ final class MovieQuizViewController: UIViewController {
         presenter.noButtonClicked()
     }
     
-    // MARK: - Private functions
+    // MARK: - Internal functions
     
     func show(quiz step: QuizStepViewModel){
         imageView.image = step.image
@@ -67,21 +66,13 @@ final class MovieQuizViewController: UIViewController {
     }
     
     func show(quiz result: QuizResultsViewModel) {
-        guard let statisticService = statisticService else {return}
-        statisticService.store(correct: presenter.correctAnswers, total: presenter.questionsAmount)
-        let bestGame = statisticService.bestGame
+        let message = presenter.makeResultMessage()
         
         let alert = AlertModel(
             title: result.title,
-            message: """
-                Ваш результат: \(presenter.correctAnswers)/\(presenter.questionsAmount)
-                Количество сыгранных квизов: \(statisticService.gamesCount)
-                Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
-                Средняя точность: \(String(format: "%.2f", statisticService.totalAccurancy))%
-                """,
+            message: message,
             buttonText: result.buttonText) { [weak self] in
                 guard let self = self else {return}
-                
                 presenter.resetGame()
             }
         
@@ -92,7 +83,6 @@ final class MovieQuizViewController: UIViewController {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
-    
     
     func showNetworkAlert(message: String) {
         hideLoadingIndicator()
@@ -108,7 +98,6 @@ final class MovieQuizViewController: UIViewController {
         
         alertPresenter?.show(alertModel: alert)
     }
-    
     
     func hideLoadingIndicator() {
         activityIndicator.isHidden = true
