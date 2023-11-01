@@ -11,9 +11,9 @@ import UIKit
 final class MovieQuizPresenter {
     private var currentQuestionIndex = 0
     let questionsAmount: Int = 10
-    private var correctAnswers = 0
+    var correctAnswers = 0
     
-    private var questionFactory: QuestionFactoryProtocol?
+    var questionFactory: QuestionFactoryProtocol?
     var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
     
@@ -45,9 +45,20 @@ final class MovieQuizPresenter {
         viewController?.showAnswerResult(isCorrect: isYes == currentQuestion.correctAnswer)
     }
     
-    
-//    step 5
+    func showNextQuestionOrResults() {
+        if self.isLastQuestion() {
+            let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
 
+            let viewModel = QuizResultsViewModel(
+                title: "Этот раунд окончен!",
+                text: text,
+                buttonText: "Сыграть ещё раз")
+            viewController?.show(quiz: viewModel)
+        } else {
+            self.switchToNextQuestion()
+            questionFactory?.requestNextQuestion()
+        }
+    }
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(

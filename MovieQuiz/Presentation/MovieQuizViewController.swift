@@ -83,11 +83,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else {return}
-            self.showNextQuestionOrResults()
+            self.presenter.correctAnswers = self.correctAnswers
+            self.presenter.questionFactory = self.questionFactory
+            self.presenter.showNextQuestionOrResults()
         }
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
+    func show(quiz result: QuizResultsViewModel) {
             guard let statisticService = statisticService else {return}
             statisticService.store(correct: correctAnswers, total: presenter.questionsAmount)
             let bestGame = statisticService.bestGame
@@ -110,23 +112,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
             
             alertPresenter?.show(alertModel: alert)
     }
-    
-    private func showNextQuestionOrResults() {
-        if presenter.isLastQuestion() {
-            let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
-
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
-        } else {
-            presenter.switchToNextQuestion()
-            questionFactory?.requestNextQuestion()
-        }
-    }
-    
-    
     
     private func showActivityIndicator(){
         activityIndicator.isHidden = false
