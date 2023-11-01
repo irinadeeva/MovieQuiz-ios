@@ -45,6 +45,12 @@ final class MovieQuizPresenter {
         viewController?.showAnswerResult(isCorrect: isYes == currentQuestion.correctAnswer)
     }
     
+    func didAnswer(isCorrectAnswer: Bool) {
+        if isCorrectAnswer {
+            correctAnswers += 1
+        }
+    }
+    
     func showNextQuestionOrResults() {
         if self.isLastQuestion() {
             let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
@@ -72,7 +78,8 @@ final class MovieQuizPresenter {
         return currentQuestionIndex == questionsAmount - 1
     }
     
-    func resetQuestionIndex() {
+    func resetGame() {
+        correctAnswers = 0
         currentQuestionIndex = 0
     }
     
