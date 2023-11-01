@@ -11,25 +11,43 @@ import UIKit
 final class MovieQuizPresenter {
     private var currentQuestionIndex = 0
     let questionsAmount: Int = 10
+    private var correctAnswers = 0
+    
+    private var questionFactory: QuestionFactoryProtocol?
     var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
     
-    func yesButtonClicked() {
-        guard let currentQuestion = currentQuestion else {
+    func didRecieveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
             return
         }
         
-        viewController?.showAnswerResult(isCorrect: true == currentQuestion.correctAnswer)
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController?.show(quiz: viewModel)
+        }
+    }
+    
+    func yesButtonClicked() {
+        didAnswer(isYes: true)
     }
     
     func noButtonClicked() {
+        didAnswer(isYes: false)
+    }
+    
+    private func didAnswer(isYes: Bool){
         guard let currentQuestion = currentQuestion else {
             return
         }
         
-        viewController?.showAnswerResult(isCorrect: false == currentQuestion.correctAnswer)
+        viewController?.showAnswerResult(isCorrect: isYes == currentQuestion.correctAnswer)
     }
     
+    
+//    step 5
+
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
@@ -48,7 +66,7 @@ final class MovieQuizPresenter {
     }
     
     func switchToNextQuestion() {
-        currentQuestionIndex += 1 
+        currentQuestionIndex += 1
     }
     
 }
