@@ -35,9 +35,11 @@ final class MovieQuizUITests: XCTestCase {
         app.buttons["Yes"].tap()
         
         sleep(3)
+        let indexLabel = app.staticTexts["Index"]
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
         
+        XCTAssertEqual("2/10", indexLabel.label)
         XCTAssertNotEqual(firstPosterData, secondPosterData)
     }
     
@@ -50,19 +52,12 @@ final class MovieQuizUITests: XCTestCase {
         app.buttons["No"].tap()
         
         sleep(3)
+        let indexLabel = app.staticTexts["Index"]
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
         
-        XCTAssertNotEqual(firstPosterData, secondPosterData)
-    }
-    
-    func testIndexLabel() {
-        app.buttons["Yes"].tap()
-        
-        sleep(3)
-        let indexLabel = app.staticTexts["Index"]
-        
         XCTAssertEqual("2/10", indexLabel.label)
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
     }
     
     func testAlert() {
@@ -87,7 +82,7 @@ final class MovieQuizUITests: XCTestCase {
         
         sleep(3)
         let alert = app.alerts["Result"]
-        sleep(3)
+//        sleep(3)
         alert.buttons.firstMatch.tap()
         sleep(3)
         let indexLabel = app.staticTexts["Index"]
