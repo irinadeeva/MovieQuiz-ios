@@ -16,16 +16,16 @@ final class MovieQuizPresenter: QuestionFactoryDelegate{
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService?
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     
-    init(viewController: MovieQuizViewController){
+    init(viewController: MovieQuizViewControllerProtocol){
         self.viewController = viewController
         
         statisticService = StatisticServiceImplementation()
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        viewController.showActivityIndicator()
+        viewController.showLoadingIndicator()
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -36,9 +36,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate{
     }
     
     func didFailToLoadData(with error: Error) {
-        viewController?.showNetworkAlert(message: error.localizedDescription)
+        viewController?.showNetworkError(message: error.localizedDescription)
     }
-    
     
     func didRecieveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -82,7 +81,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate{
         
         return message
     }
-
+    
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let questionStep = QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
+        return questionStep
+    }
     
     // MARK: - Private functions
     
@@ -114,7 +120,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate{
     private func proceedNextQuestionOrResults() {
         if self.isLastQuestion() {
             let text = "Вы ответили на \(correctAnswers) из 10, попробуйте еще раз!"
-
+            
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: text,
@@ -126,20 +132,11 @@ final class MovieQuizPresenter: QuestionFactoryDelegate{
         }
     }
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
-    }
-    
     private func isLastQuestion() -> Bool {
         return currentQuestionIndex == questionsAmount - 1
     }
-        
+    
     private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
-    
 }
