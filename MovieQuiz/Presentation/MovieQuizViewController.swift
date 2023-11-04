@@ -1,14 +1,12 @@
 import UIKit
 
 protocol MovieQuizViewControllerProtocol: AnyObject {
-    func show(quiz step: QuizStepViewModel)
+	func show(quiz step: QuizStepViewModel)
     func show(quiz result: QuizResultsViewModel)
-    
     func highlightImageBorder(isCorrect: Bool)
-    
+	func hideImageBorder()
     func showLoadingIndicator()
     func hideLoadingIndicator()
-    
     func showNetworkError(message: String)
 }
 
@@ -28,11 +26,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        presenter = MovieQuizPresenter(viewController: self)
+        presenter = MovieQuizPresenter(viewController: self) //move to builder
         
         imageView.layer.cornerRadius = 20
-        showLoadingIndicator()
-        
+		imageView.layer.masksToBounds = true
+		
         alertPresenter = AlertPresenter(viewController: self)
     }
     
@@ -48,8 +46,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     // MARK: - Internal functions
     
-    func show(quiz step: QuizStepViewModel){
-        imageView.layer.borderWidth = 0
+    func show(quiz step: QuizStepViewModel) { // I would name MovieQuizViewControllerViewModel
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
@@ -61,20 +58,25 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         let alert = AlertModel(
             title: result.title,
             message: message,
-            buttonText: result.buttonText) { [weak self] in
-                guard let self = self else {return}
-                presenter.resetGame()
-            }
+            buttonText: result.buttonText
+		) { [weak self] in
+			guard let self = self else { return }
+			self.presenter.resetGame()
+		}
         
         alertPresenter?.show(alertModel: alert)
     }
     
     func highlightImageBorder(isCorrect: Bool) {
-        imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
+//        imageView.layer.masksToBounds = true // даём разрешение на рисование рамки 🤔 idk. Could be done just once, e.g in viewDidLoad
         imageView.layer.borderWidth = 8 // толщина рамки
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
-    
+
+	func hideImageBorder() {
+		imageView.layer.borderWidth = 0
+	}
+
     func showLoadingIndicator(){
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
@@ -90,12 +92,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         let alert = AlertModel(
             title: "Ошибка",
             message: message,
-            buttonText: "Попробовать еще раз") { [weak self] in
-                guard let self = self else {return}
-                
-                presenter.resetGame()
-            }
-        
+            buttonText: "Попробовать еще раз"
+		) { [weak self] in
+			guard let self else { return }
+			self.presenter.resetGame()
+		}
+
         alertPresenter?.show(alertModel: alert)
     }
 }

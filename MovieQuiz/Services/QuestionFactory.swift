@@ -9,58 +9,61 @@ import Foundation
 
 final class QuestionFactory: QuestionFactoryProtocol {
     private let moviesLoader: MoviesLoading
+	
     private weak var delegate: QuestionFactoryDelegate?
-    
+
     private var movies: [MostPopularMovie] = []
     
-    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate? = nil) {
+    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
     
     func loadData() {
         moviesLoader.loadMovies { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                switch result {
-                case .success(let mostPopularMovies):
-                    self.movies = mostPopularMovies.items
-                    self.delegate?.didLoadDataFromServer()
-                case .failure(let error):
-                    self.delegate?.didFailToLoadData(with: error)
-                }
-            }
+			guard let self else { return }
+			Task {
+				switch result {
+				case .success(let mostPopularMovies):
+					//would load image immediately together
+					self.movies = mostPopularMovies.items
+					await self.delegate?.didLoadDataFromServer()
+				case .failure(let error):
+					await self.delegate?.didFailToLoadData(with: error)
+				}
+			}
         }
     }
-    
+
     func requestNextQuestion() {
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            let index = (0..<self.movies.count).randomElement() ?? 0
-            
-            guard let movie = self.movies[safe: index] else { return }
-            
-            var imageData = Data()
-            
-            do {
-                imageData = try Data(contentsOf: movie.resizedImageURL)
-            } catch {
-                print("Failed to load image")
-            }
-            
-            let rating = Float(movie.rating) ?? 0
-            let ratingBenchmark = (7..<9).randomElement() ?? 8
-            let text = "Рейтинг этого фильма больше чем \(ratingBenchmark)?"
-            let correctAnswer = rating > Float(ratingBenchmark)
-            
-            let question = QuizQuestion(image: imageData,
-                                        text: text,
-                                        correctAnswer: correctAnswer)
-            
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.delegate?.didRecieveNextQuestion(question: question)
-            }
-        }
+		// why random? why not last?
+		guard let movie = self.movies.randomElement() else {
+			assertionFailure("Expect some movie")// после "еще раз", краш. Need communication about the error to the user (popUp)
+			return
+		}
+
+		DispatchQueue.global().async { [weak self] in
+			guard let self else { return }
+			guard let imageData = try? Data(contentsOf: movie.resizedImageURL ?? movie.imageURL) // in a sense, convertation of URL into Data is a Network operation. If there're no internet, Data wouldn't be loaded. Maybe NetworkClient is a better class to have the operation there.
+			else {
+				assertionFailure("Failed to load image") // would be nice to have communication about the error to the user (popUp)
+				return
+			}
+			
+			let rating = Float(movie.rating) ?? 0
+			let ratingBenchmark = Int.random(in: 7..<9)
+			let text = "Рейтинг этого фильма больше чем \(ratingBenchmark)?" // would fit better in presenter, better to make constant
+			let correctAnswer = rating > Float(ratingBenchmark)
+
+			let question = QuizQuestion(
+				image: imageData,
+				text: text,
+				correctAnswer: correctAnswer
+			)
+
+			Task {
+				await self.delegate?.didRecieveNextQuestion(question: question)
+			}
+		}
     }
 }
