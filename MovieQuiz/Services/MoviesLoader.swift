@@ -8,28 +8,29 @@
 import Foundation
 
 protocol MoviesLoading {
-    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
+    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> ())
 }
-
 
 struct MoviesLoader: MoviesLoading {
     // MARK: - NetworkClient
     private let networkClient: NetworkRouting
-    
-    
+
     init(networkClient: NetworkRouting = NetworkClient()) {
         self.networkClient = networkClient
     }
-    
+
     // MARK: - URL
-    private var mostPopularMoviesUrl: URL {
+    private let mostPopularMoviesUrl: URL? = {
         guard let url = URL(string: "https://imdb-api.com/API/Top250Movies/k_zcuw1ytf") else {
-            preconditionFailure("Unable to construct mostPopilarMoviesURL")
+            assertionFailure("Unable to construct mostPopilarMoviesURL") // this will crash the app (even on prod) if string is empty or has spaces. Better to handle with popUp. To crash only on dev use assertionFailure
+			return nil
         }
         return url
-    }
-    
-    func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> Void) {
+    }()
+
+	func loadMovies(handler: @escaping (Result<MostPopularMovies, Error>) -> ()) {
+		guard let mostPopularMoviesUrl else { return }
+		
         networkClient.fetch(url: mostPopularMoviesUrl) { result in
             switch result {
             case .success(let data):

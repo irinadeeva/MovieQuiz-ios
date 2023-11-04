@@ -7,22 +7,22 @@
 
 import Foundation
 
-struct MostPopularMovies: Codable {
+struct MostPopularMovies: Decodable {
     let errorMessage: String
     let items: [MostPopularMovie]
 }
 
-struct MostPopularMovie: Codable {
+struct MostPopularMovie: Decodable {
     let title: String
     let rating: String
     let imageURL: URL
     
-    var resizedImageURL: URL {
+    var resizedImageURL: URL? {
         let urlString = imageURL.absoluteString
         let imageUrlString = urlString.components(separatedBy: "._")[0] + "._V0_UX600_.jpg"
         
         guard let newURL = URL(string: imageUrlString) else {
-            return imageURL
+            return nil //image is not resized but method called resizedImageURL. Would rather return nil or rename method
         }
         
         return newURL

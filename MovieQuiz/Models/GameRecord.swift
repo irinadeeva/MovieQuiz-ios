@@ -8,11 +8,11 @@
 import Foundation
 
 struct GameRecord: Codable {
-    let correct: Int
+    let correct: Int // bestResult?
     let total: Int
     let date: Date
     
-    func isHigher(than another: Int) -> Bool {
+    func isHigher(than another: Int) -> Bool { // isNewBestRecord(_ currentResult: Int) -> Bool  maybe?
         return correct > another
     }
 }
