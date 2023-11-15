@@ -12,11 +12,11 @@ class MoviesLoaderTests: XCTestCase {
     func testLoadedMovies() throws {
         let stubNetworkClient = StubNetworkClient(emulateError: false)
         let movieLoader = MoviesLoader(networkClient: stubNetworkClient)
-        
+
         let expectation = expectation(description: "Loading expectation")
-        
-        movieLoader.loadMovies{ result in
-            switch result{
+
+        movieLoader.loadMovies { result in
+            switch result {
             case .success(let movies):
                 XCTAssertEqual(movies.items.count, 2)
                 expectation.fulfill()
@@ -24,18 +24,18 @@ class MoviesLoaderTests: XCTestCase {
                 XCTFail("Unexpected Failure")
             }
         }
-        
+
         waitForExpectations(timeout: 1)
     }
-    
+
     func testNotLoadedMovies() throws {
         let stubNetworkClient = StubNetworkClient(emulateError: true)
         let movieLoader = MoviesLoader(networkClient: stubNetworkClient)
-        
+
         let expectation = expectation(description: "Loading expectation")
-        
-        movieLoader.loadMovies{ result in
-            switch result{
+
+        movieLoader.loadMovies { result in
+            switch result {
             case .failure(let error):
                 XCTAssertNotNil(error)
                 expectation.fulfill()
@@ -44,7 +44,7 @@ class MoviesLoaderTests: XCTestCase {
 
             }
         }
-        
+
         waitForExpectations(timeout: 1)
     }
 }
@@ -53,9 +53,9 @@ struct StubNetworkClient: NetworkRouting {
     enum TestError: Error {
         case test
     }
-    
+
     let emulateError: Bool
-    
+
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
         if emulateError {
             handler(.failure(TestError.test))
@@ -63,7 +63,7 @@ struct StubNetworkClient: NetworkRouting {
             handler(.success(expectedResponse))
         }
     }
-    
+
     private var expectedResponse: Data {
                 """
                 {
