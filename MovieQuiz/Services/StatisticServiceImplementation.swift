@@ -9,7 +9,7 @@ import Foundation
 
 final class StatisticServiceImplementation: StatisticService {
     private let userDefaults = UserDefaults.standard
-    var totalAccurancy: Double {
+    var totalAccuracy: Double {
         get {
             return userDefaults.double(forKey: Keys.total.rawValue)
         }
@@ -27,10 +27,10 @@ final class StatisticServiceImplementation: StatisticService {
         }
     }
 
-    var bestGame: GameRecord {
+    var bestGame: BestGame {
         get {
             guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
-                  let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
+                  let record = try? JSONDecoder().decode(BestGame.self, from: data) else {
                 return .init(correct: 0, total: 0, date: Date())
             }
 
@@ -46,16 +46,16 @@ final class StatisticServiceImplementation: StatisticService {
     }
 
     func store(correct count: Int, total amount: Int) {
-        if Int(totalAccurancy) != 0 {
-            totalAccurancy = (totalAccurancy + Double(count)/Double(amount) * 100.0)/2
+        if Int(totalAccuracy) != 0 {
+            totalAccuracy = (totalAccuracy + Double(count)/Double(amount) * 100.0)/2
         } else {
-            totalAccurancy = Double(count)/Double(amount) * 100.0
+            totalAccuracy = Double(count)/Double(amount) * 100.0
         }
 
         gamesCount += 1
 
         if !bestGame.isHigher(than: count) {
-            bestGame = GameRecord(correct: count, total: amount, date: Date())
+            bestGame = BestGame(correct: count, total: amount, date: Date())
         }
     }
 }

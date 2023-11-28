@@ -76,7 +76,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         Ваш результат: \(correctAnswers)/\(questionsAmount)
         Количество сыгранных квизов: \(statisticService.gamesCount)
         Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))
-        Средняя точность: \(String(format: "%.2f", statisticService.totalAccurancy))%
+        Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
         """
 
         return message
