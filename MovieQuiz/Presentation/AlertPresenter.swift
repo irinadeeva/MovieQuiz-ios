@@ -8,7 +8,7 @@ import UIKit
 
 final class AlertPresenter {
     weak var viewController: UIViewController?
-    
+
     init(viewController: UIViewController?) {
         self.viewController = viewController
     }
@@ -20,11 +20,13 @@ extension AlertPresenter: AlertProtocol {
             title: alertModel.title,
             message: alertModel.message,
             preferredStyle: .alert)
-        
+
         let action = UIAlertAction(title: alertModel.buttonText, style: .default) { _ in
             alertModel.completion()
         }
-        
+
+        alert.view.accessibilityIdentifier = "Result"
+
         alert.addAction(action)
         viewController?.present(alert, animated: true)
     }

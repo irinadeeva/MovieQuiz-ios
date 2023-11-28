@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct GameRecord: Codable {
+struct BestGame: Codable {
     let correct: Int
     let total: Int
     let date: Date
-    
+
     func isHigher(than another: Int) -> Bool {
         return correct > another
     }
