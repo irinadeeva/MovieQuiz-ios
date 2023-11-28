@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GameRecord: Codable {
+struct bestGame: Codable {
     let correct: Int
     let total: Int
     let date: Date
