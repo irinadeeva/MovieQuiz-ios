@@ -59,7 +59,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
             title: result.title,
             message: message,
             buttonText: result.buttonText) { [weak self] in
-                guard let self = self else {return}
+                guard let self else {return}
                 presenter.resetGame()
             }
 
@@ -88,7 +88,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
             title: "Ошибка",
             message: message,
             buttonText: "Попробовать еще раз") { [weak self] in
-                guard let self = self else {return}
+                guard let self else {return}
 
                 presenter.resetGame()
             }

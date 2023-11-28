@@ -39,11 +39,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController?.showNetworkError(message: error.localizedDescription)
     }
 
-    func didRecieveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-
+    func didReceiveNextQuestion(question: QuizQuestion) {
         currentQuestion = question
         let viewModel = convert(model: question)
         DispatchQueue.main.async { [weak self] in
@@ -83,14 +79,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
 
     func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
+        return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
     }
 
     // MARK: - Private functions
+
     private func didAnswer(isYes: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
@@ -111,7 +107,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController?.highlightImageBorder(isCorrect: isCorrect)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self = self else {return}
+            guard let self else { return }
             self.proceedNextQuestionOrResults()
         }
     }
@@ -123,7 +119,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: text,
-                buttonText: "Сыграть ещё раз")
+                buttonText: "Сыграть ещё раз"
+            )
             viewController?.show(quiz: viewModel)
         } else {
             currentQuestionIndex += 1

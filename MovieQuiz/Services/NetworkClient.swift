@@ -21,20 +21,17 @@ struct NetworkClient: NetworkRouting {
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
 
-            if let error = error {
+            if let error {
                 handler(.failure(error))
-                return
             }
 
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
                 handler(.failure(NetworkError.codeError))
-                return
             }
 
-            guard let data = data else {return}
+            guard let data else {return}
             handler(.success(data))
-
         }
 
         task.resume()

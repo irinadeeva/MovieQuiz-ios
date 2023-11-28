@@ -8,9 +8,9 @@
 import Foundation
 
 protocol StatisticService {
-    var totalAccuracy: Double {get}
-    var gamesCount: Int {get}
-    var bestGame: BestGame {get}
+    var totalAccuracy: Double { get }
+    var gamesCount: Int { get }
+    var bestGame: BestGame { get }
 
     func store(correct count: Int, total amount: Int)
 }
